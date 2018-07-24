@@ -1,3 +1,31 @@
-<p>
-  subscriber-report works!
-</p>
+<h1>
+  Subscriber Report
+</h1>
+
+<button (click)="exportCSV()">Export</button>
+<button (click)="goBack()">Back</button>
+
+<p>{{count}} subscribers currently</p>
+
+<table class="table">
+    <tr>
+        <th>Created At</th>
+        <th>Updated At</th>
+        <th>Last Name</th>
+        <th>First Name</th>
+        <th>Email</th>
+        <th>Province/State</th>
+        <th>Country</th>
+        <th>Status</th>
+    </tr>
+    <tr *ngFor="let subscriber of subscribers | orderBy: 'last_name'">
+        <td>{{subscriber.created_at}}</td>
+        <td>{{subscriber.updated_at}}</td>
+        <td>{{subscriber.last_name}}</td>
+        <td>{{subscriber.first_name}}</td>
+        <td>{{subscriber.email}}</td>
+        <td>{{subscriber.billing_province}}</td>
+        <td>{{subscriber.billing_country}}</td>
+        <td>{{subscriber.status}}</td>
+    </tr>
+</table>

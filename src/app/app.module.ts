@@ -14,6 +14,7 @@ import { CategoryReportsComponent } from './category-reports/category-reports.co
 import { DateRangeReportComponent } from './date-range-report/date-range-report.component';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { OrderModule } from 'ngx-order-pipe';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     BrowserAnimationsModule,
+    OrderModule
   ],
   providers: [],
   bootstrap: [AppComponent]
