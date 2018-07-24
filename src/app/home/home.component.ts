@@ -20,12 +20,14 @@ export class HomeComponent implements OnInit {
     private spinnerService: Ng4LoadingSpinnerService ) { }
 
   ngOnInit() {
+    this.spinnerService.show();
     this.http.get(environment.rDatesUrl).subscribe((dateData:any)=>{
       this.today = new Date();
       this.today = this.today.toISOString().split("T")[0];
       this.updateDateRange = `${dateData.start_date} to ${this.today}`;
       this.startDate = dateData.start_date;
       this.isUpdateable = (this.today > this.startDate);
+      this.spinnerService.hide();
     });
   }
 
