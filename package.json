@@ -12,7 +12,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^5.2.0",
+    "@angular/animations": "^5.2.11",
     "@angular/common": "^5.2.0",
     "@angular/compiler": "^5.2.0",
     "@angular/core": "^5.2.0",
@@ -21,7 +21,13 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "angular5-csv": "^0.2.10",
+    "bootstrap": "^4.1.2",
     "core-js": "^2.4.1",
+    "ng-pick-datetime": "^5.2.6",
+    "ng4-loading-spinner": "^1.2.3",
+    "ngx-spinner": "^6.0.0",
+    "open-iconic": "^1.1.1",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"
   },

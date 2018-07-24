@@ -1,0 +1,44 @@
+<h1>
+  Date Range Report
+</h1>
+
+<button (click)="exportCSV()">Export</button>
+<button (click)="goBack()">Back</button>
+<br><br>
+<label>
+    From
+    <input [owlDateTimeTrigger]="dt1" [owlDateTime]="dt1">
+    <owl-date-time [pickerType]="'calendar'" #dt1></owl-date-time>
+</label>
+<label>
+    To
+    <input [owlDateTimeTrigger]="dt2" [owlDateTime]="dt2">
+    <owl-date-time [pickerType]="'calendar'" #dt2></owl-date-time>
+</label>
+<button (click)="goReport(dt1.selected, dt2.selected)">Search</button>
+
+
+<div *ngIf="haveData">
+  <table class="table">
+      <tr>
+          <th>Last Name</th>
+          <th>First Name</th>
+          <th>Order Date</th>
+          <th>Email</th>
+          <th>Item Purchased</th>
+          <th>Item Description</th>
+          <th>Quantity</th>
+          <th>Price</th>
+      </tr>
+      <tr *ngFor="let order of orders">
+          <td>{{order.last_name}}</td>
+          <td>{{order.first_name}}</td>
+          <td>{{order.created_at}}</td>
+          <td>{{order.email}}</td>
+          <td>{{order.item_purchased}}</td>
+          <td>{{order.item_description}}</td>
+          <td>{{order.quantity}}</td>
+          <td>${{order.price.toFixed(2)}}</td>
+      </tr>
+  </table>
+</div>

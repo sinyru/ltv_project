@@ -1,0 +1,42 @@
+<h1>
+  Return Customers Report!
+</h1>
+<button (click)="exportCSV()">Export</button>
+<button (click)="goBack()">Back</button>
+
+<label for="Category-select">Choose a Category:</label>
+
+<select id="Category-select" (change)="goReport($event)">
+    <option value="">--Please choose an option--</option>
+    <option value="sampleOrdersUrl">Samples</option>
+    <option value="sixPackOrdersUrl">6-Packs</option>
+    <option value="twevlePackOrdersUrl">12-Packs</option>
+    <option value="twentyFourPackOrdersUrl">24-Packs</option>
+</select>
+
+<div *ngIf="haveData">
+  <table class="table">
+      <tr>
+          <th>Last Name</th>
+          <th>First Name</th>
+          <th>Order Date</th>
+          <th>Email</th>
+          <th>Item Purchased</th>
+          <th>Item Description</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Time Lapsed</th>
+      </tr>
+      <tr *ngFor="let return of returns">
+          <td>{{return.last_name}}</td>
+          <td>{{return.first_name}}</td>
+          <td>{{return.created_at}}</td>
+          <td>{{return.email}}</td>
+          <td>{{return.item_purchased}}</td>
+          <td>{{return.item_description}}</td>
+          <td>{{return.quantity}}</td>
+          <td>${{return.price.toFixed(2)}}</td>
+          <td>{{return.time_lapsed}}</td>
+      </tr>
+  </table>
+</div>
