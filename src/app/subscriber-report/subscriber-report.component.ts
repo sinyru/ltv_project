@@ -20,6 +20,7 @@ export class SubscriberReportComponent implements OnInit {
   twelveSubs:any=[];
   twentyFourSubs:any=[];
   reportSelected:string="";
+  filterValue:string="last_name";
 
   constructor(private http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService) { }
@@ -54,7 +55,7 @@ export class SubscriberReportComponent implements OnInit {
               "product_title":subscriptions[x].subscriptions[y].product_title,
               "variant_title":subscriptions[x].subscriptions[y].variant_title,
               "cancellation_reason": (subscriptions[x].subscriptions[y].cancellation_reason === null)? "" : (subscriptions[x].subscriptions[y].cancellation_reason_comments === null)? subscriptions[x].subscriptions[y].cancellation_reason : subscriptions[x].subscriptions[y].cancellation_reason + " " + subscriptions[x].subscriptions[y].cancellation_reason_comments,
-              "price":subscriptions[x].subscriptions[y].price,
+              "price":(subscriptions[x].subscriptions[y].price === null)? 0 : subscriptions[x].subscriptions[y].price,
               "quantity":subscriptions[x].subscriptions[y].quantity
             }
             this.subscriptions.push(subscription);
@@ -73,6 +74,18 @@ export class SubscriberReportComponent implements OnInit {
     (numPacks.target.value === '6-Pack')? this.reportSelected = "6-Pack":
     (numPacks.target.value === '12-Pack')? this.reportSelected = "12-Pack":
     (numPacks.target.value === '24-Pack')? this.reportSelected = "24-Pack": this.reportSelected = "";
+  }
+
+  filterSearch(fieldValue:any) {
+    (fieldValue.target.value === 'last_name')? this.filterValue = "last_name":
+    (fieldValue.target.value === 'first_name')? this.filterValue = "first_name":
+    (fieldValue.target.value === 'created_at')? this.filterValue = "created_at":
+    (fieldValue.target.value === 'billing_province')? this.filterValue = "billing_province":
+    (fieldValue.target.value === 'billing_country')? this.filterValue = "billing_country":
+    (fieldValue.target.value === 'status')? this.filterValue = "status":
+    (fieldValue.target.value === 'cancellation_reason')? this.filterValue = "cancellation_reason":
+    (fieldValue.target.value === 'quantity')? this.filterValue = "quantity":
+    (fieldValue.target.value === 'email')? this.filterValue = "email": this.filterValue = "";
   }
 
   goBack() {
