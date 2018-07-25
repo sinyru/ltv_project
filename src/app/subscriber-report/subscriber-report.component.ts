@@ -43,15 +43,26 @@ export class SubscriberReportComponent implements OnInit {
           for(let y=0;y<subscriptions[x].subscriptions.length;y++) {
             let customer = this.subscribers.find((subscriber) => subscriber.id === subscriptions[x].subscriptions[y].customer_id);
             let subscription = {
-              "subscription": subscriptions[x].subscriptions[y],
-              "customer": customer
+              "last_name":customer.last_name,
+              "first_name":customer.first_name,
+              "created_at":customer.created_at,
+              "updated_at":customer.updated_at,
+              "billing_province":customer.billing_province,
+              "billing_country":customer.billing_country,
+              "email":customer.email,
+              "status":subscriptions[x].subscriptions[y].status,
+              "product_title":subscriptions[x].subscriptions[y].product_title,
+              "variant_title":subscriptions[x].subscriptions[y].variant_title,
+              "cancellation_reason": (subscriptions[x].subscriptions[y].cancellation_reason === null)? "" : (subscriptions[x].subscriptions[y].cancellation_reason_comments === null)? subscriptions[x].subscriptions[y].cancellation_reason : subscriptions[x].subscriptions[y].cancellation_reason + " " + subscriptions[x].subscriptions[y].cancellation_reason_comments,
+              "price":subscriptions[x].subscriptions[y].price,
+              "quantity":subscriptions[x].subscriptions[y].quantity
             }
             this.subscriptions.push(subscription);
           }
         }
-        this.sixSubs = this.subscriptions.filter(subscription => subscription.subscription.variant_title === '6-Pack');
-        this.twelveSubs = this.subscriptions.filter(subscription => subscription.subscription.variant_title === '12-Pack')
-        this.twentyFourSubs = this.subscriptions.filter(subscription => subscription.subscription.variant_title === '24-Pack')
+        this.sixSubs = this.subscriptions.filter(subscription => subscription.variant_title === '6-Pack');
+        this.twelveSubs = this.subscriptions.filter(subscription => subscription.variant_title === '12-Pack')
+        this.twentyFourSubs = this.subscriptions.filter(subscription => subscription.variant_title === '24-Pack')
         this.spinnerService.hide();
       });
     });
