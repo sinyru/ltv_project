@@ -5,6 +5,10 @@
 
 <br><br><br>
 
-<div *ngIf="isUpdateable">
-  <button (click)="updateDatabase()">Capture Data from {{updateDateRange}}</button>
+<div *ngIf="isUpdateable && !isWeeksUpdateable">
+  <button (click)="updateUpToDate()">Capture Data from {{updateDateRange}}</button>
+</div>
+
+<div *ngIf="isWeeksUpdateable">
+<button (click)="updatebyWeeks()">Update by {{weeks}} weeks</button>
 </div>

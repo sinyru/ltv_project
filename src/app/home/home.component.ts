@@ -16,6 +16,9 @@ export class HomeComponent implements OnInit {
   public startDate:any = '';
   public today:any = '';
   public isUpdateable:boolean = false;
+  public lapsedDays:number = 0;
+  public weeks:number = 0;
+  public isWeeksUpdateable:boolean = true;
   constructor(private http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService ) { }
 
@@ -28,6 +31,14 @@ export class HomeComponent implements OnInit {
       this.startDate = dateData.start_date;
       this.isUpdateable = (this.today > this.startDate);
       this.spinnerService.hide();
+
+      let dt1 = this.startDate.split("-")
+      dt1 = new Date(dt1[0], dt1[1]-1, dt1[2]);
+      let dt2 = this.today.split("-")
+      dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
+      this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
+      (this.lapsedDays > 28)? this.weeks = 4: (this.lapsedDays > 21)? this.weeks = 3:
+      (this.lapsedDays > 14)? this.weeks = 2: (this.lapsedDays > 7)? this.weeks = 1: this.isWeeksUpdateable=false;
     });
   }
 
@@ -51,10 +62,57 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['date-range-report']);
   }
 
-  updateDatabase() {
-    this.spinnerService.show();
+  updatebyWeeks() {
+    if (this.lapsedDays > 7) {
+      this.spinnerService.show();
+      this.http.get(environment.pageOrdersUrl).subscribe((weekOneOrders:any)=>{
+        this.updateDatabase(weekOneOrders);
+        if (this.lapsedDays < 14) {
+          this.spinnerService.hide();
+          // window.location.reload();
+        }
+        if (this.lapsedDays > 14) {
+          this.http.get(environment.pageOrdersUrl).subscribe((weekTwoOrders:any)=>{
+            this.updateDatabase(weekTwoOrders);
+            if (this.lapsedDays < 21) {
+              this.spinnerService.hide();
+              // window.location.reload();
+            }
+            if (this.lapsedDays > 21) {
+              this.http.get(environment.pageOrdersUrl).subscribe((weekThreeOrders:any)=>{
+                this.updateDatabase(weekThreeOrders);
+                if (this.lapsedDays < 28) {
+                  this.spinnerService.hide();
+                  // window.location.reload();
+                }
+                if (this.lapsedDays > 28) {
+                  this.http.get(environment.pageOrdersUrl).subscribe((weekFourOrders:any)=>{
+                    this.updateDatabase(weekFourOrders);
+                    this.spinnerService.hide();
+                    // window.location.reload();
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+  }
+
+  updateUpToDate() {
     this.http.get(environment.ordersUrl)
     .subscribe((data:any)=>{
+      this.spinnerService.show();
+      this.updateDatabase(data);
+      window.location.reload();
+    });
+  }
+
+  updateDatabase(data:any) {
+    // this.spinnerService.show();
+    // this.http.get(environment.ordersUrl)
+    // .subscribe((data:any)=>{
       let orders = [];
       for(let i=0;i<data.length;i++){
         for(let k=0;k<data[i].orders.length;k++){
@@ -66,15 +124,15 @@ export class HomeComponent implements OnInit {
       let twelveCounts = 0;
       let twentyFourCounts = 0;
       for(let i=0;i<orders.length;i++) {
-        let customer = {
-                          "customer_id": orders[i].customer.id,
-                          "email": orders[i].customer.email,
-                          "first_name": orders[i].customer.first_name,
-                          "last_name": orders[i].customer.last_name,
-                          "province": (orders[i].customer.default_address)? orders[i].customer.default_address.province_code : 'N/A' ,
-                          "country": (orders[i].customer.default_address)? orders[i].customer.default_address.province_code : 'N/A'
-                       };
-        this.http.post(environment.customersUrl, {"customer": customer}).toPromise().then();
+        // let customer = {
+        //                   "customer_id": orders[i].customer.id,
+        //                   "email": orders[i].customer.email,
+        //                   "first_name": orders[i].customer.first_name,
+        //                   "last_name": orders[i].customer.last_name,
+        //                   "province": (orders[i].customer.default_address)? orders[i].customer.default_address.province_code : 'N/A' ,
+        //                   "country": (orders[i].customer.default_address)? orders[i].customer.default_address.province_code : 'N/A'
+        //                };
+        // this.http.post(environment.customersUrl, {"customer": customer}).toPromise().then();
         for(let j=0;j<orders[i].line_items.length;j++){
           let order = {
             "order_id": orders[i].id,
@@ -107,7 +165,7 @@ export class HomeComponent implements OnInit {
           }
         }
       }
-      this.http.get(environment.subscriberCountsUrl).subscribe((data:any)=>{
+      // this.http.get(environment.subscriberCountsUrl).subscribe((data:any)=>{
         // let monthReport = {
         //   "order_counts": orders.length,
         //   "sample_counts": sampleCounts,
@@ -118,17 +176,15 @@ export class HomeComponent implements OnInit {
         //   "date_range": this.updateDateRange
         // };
         // this.http.post(environment.monthReportsUrl, {"month_report": monthReport}).toPromise().then(()=>{
-          let updateDate = {
-            "start_date": this.today
-          };
-          this.http.post(environment.rDatesUrl, {"rdate": updateDate}).toPromise().then(()=>{
-            this.spinnerService.hide();
-            window.location.reload();
-          });
+          // let updateDate = {
+          //   "start_date": this.today
+          // };
+          // this.http.post(environment.rDatesUrl, {"rdate": updateDate}).toPromise().then(()=>{
+          //   this.spinnerService.hide();
+          // });
         // });
-      });
-    });
-
+      // });
+    // });
   }
 
 }
