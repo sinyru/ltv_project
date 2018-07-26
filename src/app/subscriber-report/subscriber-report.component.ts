@@ -19,8 +19,14 @@ export class SubscriberReportComponent implements OnInit {
   sixSubs:any=[];
   twelveSubs:any=[];
   twentyFourSubs:any=[];
-  reportSelected:string="";
+  reportSelected:any="";
   filterValue:string="last_name";
+  dRSubscriptions:any = [];
+  dRSixSubs:any = [];
+  dRTwelveSubs:any = [];
+  dRTwentyFourSubs:any = [];
+  isDateRange:boolean = false;
+  searchDates:string ='';
 
   constructor(private http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService) { }
@@ -29,9 +35,6 @@ export class SubscriberReportComponent implements OnInit {
     this.subscribers = [];
 
     this.spinnerService.show();
-    this.http.get(environment.subscriberCountsUrl).subscribe((counts:any)=>{
-      this.count = counts.count;
-    });
     this.http.get(environment.subscribersUrl).subscribe((subscribers:any)=>{
 
       this.http.get(environment.subscriptionsUrl).subscribe((subscriptions:any)=>{
@@ -42,6 +45,9 @@ export class SubscriberReportComponent implements OnInit {
         }
         for(let x=0;x<subscriptions.length;x++) {
           for(let y=0;y<subscriptions[x].subscriptions.length;y++) {
+            if(subscriptions[x].subscriptions[y].status === 'ACTIVE') {
+              this.count++;
+            }
             let customer = this.subscribers.find((subscriber) => subscriber.id === subscriptions[x].subscriptions[y].customer_id);
             let subscription = {
               "last_name":customer.last_name,
@@ -64,16 +70,33 @@ export class SubscriberReportComponent implements OnInit {
         this.sixSubs = this.subscriptions.filter(subscription => subscription.variant_title === '6-Pack');
         this.twelveSubs = this.subscriptions.filter(subscription => subscription.variant_title === '12-Pack')
         this.twentyFourSubs = this.subscriptions.filter(subscription => subscription.variant_title === '24-Pack')
+
         this.spinnerService.hide();
       });
     });
   }
 
+  getWithinDateSubs(startDate:string, endDate:string) {
+    this.isDateRange = true;
+    let startDate = startDate.toISOString().split("T")[0];
+    let endDate = endDate.toISOString().split("T")[0];
+    this.searchDates = `${startDate}--${endDate}`;
+    this.dRSubscriptions = this.subscriptions.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());
+    this.dRSixSubs = this.sixSubs.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());
+    this.dRTwelveSubs = this.twelveSubs.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());
+    this.dRTwentyFourSubs = this.twentyFourSubs.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());
+    (this.reportSelected === this.twentyFourSubs || this.reportSelected === this.dRTwentyFourSubs)? this.reportSelected = this.dRTwentyFourSubs :
+    (this.reportSelected === this.sixSubs || this.reportSelected === this.dRSixSubs)? this.reportSelected = this.dRSixSubs :
+    (this.reportSelected === this.twelveSubs || this.reportSelected === this.dRTwelveSubs)? this.reportSelected = this.dRTwelveSubs :
+    this.reportSelected = this.dRSubscriptions;
+
+  }
+
   goReport(numPacks:any) {
-    (numPacks.target.value === 'All')? this.reportSelected = "All":
-    (numPacks.target.value === '6-Pack')? this.reportSelected = "6-Pack":
-    (numPacks.target.value === '12-Pack')? this.reportSelected = "12-Pack":
-    (numPacks.target.value === '24-Pack')? this.reportSelected = "24-Pack": this.reportSelected = "";
+    (numPacks.target.value === 'All')? this.reportSelected = this.dRSubscriptions:
+    (numPacks.target.value === '6-Pack')? this.reportSelected = this.dRSixSubs:
+    (numPacks.target.value === '12-Pack')? this.reportSelected = this.dRTwelveSubs:
+    (numPacks.target.value === '24-Pack')? this.reportSelected = this.dRTwentyFourSubs: this.reportSelected = "";
   }
 
   filterSearch(fieldValue:any) {
@@ -93,10 +116,11 @@ export class SubscriberReportComponent implements OnInit {
   }
 
   exportCSV() {
-    (this.reportSelected === 'All')? new Angular5Csv(this.subscriptions,'all-supscriptions-report'):
-    (this.reportSelected === '6-Pack')? new Angular5Csv(this.sixSubs, '6p-supscriptions-report'):
-    (this.reportSelected === '12-Pack')? new Angular5Csv(this.twelveSubs, '12p-supscriptions-report'):
-    (this.reportSelected === '24-Pack')? new Angular5Csv(this.twentyFourSubs, '24p-supscriptions-report'): this.reportSelected = "";
+    (this.reportSelected === this.dRSubscriptions)? new Angular5Csv(this.dRSubscriptions,`all-supscriptions-report-${this.searchDates}`):
+    (this.reportSelected === this.dRSixSubs)? new Angular5Csv(this.dRSixSubs, `6p-supscriptions-report-${this.searchDates}`):
+    (this.reportSelected === this.dRTwelveSubs)? new Angular5Csv(this.dRTwelveSubs, `12p-supscriptions-report-${this.searchDates}`):
+    (this.reportSelected === this.dRTwentyFourSubs)? new Angular5Csv(this.dRTwentyFourSubs, `24p-supscriptions-report-${this.searchDates}`): this.reportSelected = "";
   }
+
 
 }

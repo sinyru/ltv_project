@@ -37,8 +37,7 @@ export class HomeComponent implements OnInit {
       let dt2 = this.today.split("-")
       dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
       this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
-      (this.lapsedDays > 28)? this.weeks = 4: (this.lapsedDays > 21)? this.weeks = 3:
-      (this.lapsedDays > 14)? this.weeks = 2: (this.lapsedDays > 7)? this.weeks = 1: this.isWeeksUpdateable=false;
+      (this.lapsedDays > 14)? this.weeks = 2: this.isWeeksUpdateable=false;
     });
   }
 
@@ -63,49 +62,20 @@ export class HomeComponent implements OnInit {
   }
 
   updatebyWeeks() {
-    if (this.lapsedDays > 7) {
-      this.spinnerService.show();
-      this.http.get(environment.pageOrdersUrl).subscribe((weekOneOrders:any)=>{
-        this.updateDatabase(weekOneOrders);
-        if (this.lapsedDays < 14) {
-          this.spinnerService.hide();
-          // window.location.reload();
-        }
-        if (this.lapsedDays > 14) {
-          this.http.get(environment.pageOrdersUrl).subscribe((weekTwoOrders:any)=>{
-            this.updateDatabase(weekTwoOrders);
-            if (this.lapsedDays < 21) {
-              this.spinnerService.hide();
-              // window.location.reload();
-            }
-            if (this.lapsedDays > 21) {
-              this.http.get(environment.pageOrdersUrl).subscribe((weekThreeOrders:any)=>{
-                this.updateDatabase(weekThreeOrders);
-                if (this.lapsedDays < 28) {
-                  this.spinnerService.hide();
-                  // window.location.reload();
-                }
-                if (this.lapsedDays > 28) {
-                  this.http.get(environment.pageOrdersUrl).subscribe((weekFourOrders:any)=>{
-                    this.updateDatabase(weekFourOrders);
-                    this.spinnerService.hide();
-                    // window.location.reload();
-                  });
-                }
-              });
-            }
-          });
-        }
-      });
-    }
+    this.spinnerService.show();
+    this.http.get(environment.pageOrdersUrl)
+    .subscribe((orders:any)=>{
+      this.updateDatabase(orders);
+      this.spinnerService.hide();
+    });
   }
 
   updateUpToDate() {
+    this.spinnerService.show();
     this.http.get(environment.ordersUrl)
     .subscribe((data:any)=>{
-      this.spinnerService.show();
       this.updateDatabase(data);
-      window.location.reload();
+      this.spinnerService.hide();
     });
   }
 
