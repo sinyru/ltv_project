@@ -15,10 +15,11 @@ export class HomeComponent implements OnInit {
   public updateDateRange:string = '';
   public startDate:any = '';
   public today:any = '';
+  public twoWeeksDate:any = '';
   public isUpdateable:boolean = false;
   public lapsedDays:number = 0;
-  public weeks:number = 0;
-  public isWeeksUpdateable:boolean = true;
+  public weeks:number = 2;
+  public isWeeksUpdateable:boolean = false;
   constructor(private http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService ) { }
 
@@ -32,41 +33,25 @@ export class HomeComponent implements OnInit {
       this.isUpdateable = (this.today > this.startDate);
       this.spinnerService.hide();
 
-      let dt1 = this.startDate.split("-")
+      let dt1 = this.startDate.split("-");
       dt1 = new Date(dt1[0], dt1[1]-1, dt1[2]);
-      let dt2 = this.today.split("-")
+      let dt2 = this.today.split("-");
       dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
+      let dt3 = this.startDate.split("-");
+      dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+14);
       this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
-      (this.lapsedDays > 14)? this.weeks = 2: this.isWeeksUpdateable=false;
+      (this.lapsedDays > 14)? this.isWeeksUpdateable=true : this.isWeeksUpdateable=false ;
+      this.today = dt2.toISOString().split("T")[0];
+      this.twoWeeksDate = dt3.toISOString().split("T")[0];
     });
-  }
 
-  goSubscribers() {
-    this.router.navigate(['subscribers-report']);
-  }
-
-  goMonthlyReport() {
-    this.router.navigate(['monthly-report']);
-  }
-
-  goReturnCustomers() {
-    this.router.navigate(['return-customers']);
-  }
-
-  goCategoryReports() {
-    this.router.navigate(['category-reports']);
-  }
-
-  goDateRangeReport() {
-    this.router.navigate(['date-range-report']);
   }
 
   updatebyWeeks() {
     this.spinnerService.show();
     this.http.get(environment.pageOrdersUrl)
     .subscribe((orders:any)=>{
-      this.updateDatabase(orders);
-      this.spinnerService.hide();
+      this.updateDatabase(orders, this.twoWeeksDate);
     });
   }
 
@@ -74,12 +59,11 @@ export class HomeComponent implements OnInit {
     this.spinnerService.show();
     this.http.get(environment.ordersUrl)
     .subscribe((data:any)=>{
-      this.updateDatabase(data);
-      this.spinnerService.hide();
+      this.updateDatabase(data, this.today);
     });
   }
 
-  updateDatabase(data:any) {
+  updateDatabase(data:any, updateDate:any) {
     // this.spinnerService.show();
     // this.http.get(environment.ordersUrl)
     // .subscribe((data:any)=>{
@@ -146,15 +130,45 @@ export class HomeComponent implements OnInit {
         //   "date_range": this.updateDateRange
         // };
         // this.http.post(environment.monthReportsUrl, {"month_report": monthReport}).toPromise().then(()=>{
-          // let updateDate = {
-          //   "start_date": this.today
-          // };
-          // this.http.post(environment.rDatesUrl, {"rdate": updateDate}).toPromise().then(()=>{
-          //   this.spinnerService.hide();
-          // });
+          let newDate = {
+            "start_date": updateDate
+          };
+          this.http.post(environment.rDatesUrl, {"rdate": newDate}).toPromise().then(()=>{
+              this.isUpdateable = (this.today > this.startDate);
+              let dt1 = this.startDate.split("-");
+              dt1 = new Date(dt1[0], dt1[1]-1, dt1[2]);
+              let dt2 = this.today.split("-");
+              dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
+              let dt3 = this.startDate.split("-");
+              dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+14);
+              this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
+              (this.lapsedDays > 14)? this.isWeeksUpdateable=true : this.isWeeksUpdateable=false ;
+              this.today = dt2.toISOString().split("T")[0];
+              this.twoWeeksDate = dt3.toISOString().split("T")[0];
+              this.spinnerService.hide();
+          });
         // });
       // });
     // });
   }
 
+    goSubscribers() {
+      this.router.navigate(['subscribers-report']);
+    }
+
+    goMonthlyReport() {
+      this.router.navigate(['monthly-report']);
+    }
+
+    goReturnCustomers() {
+      this.router.navigate(['return-customers']);
+    }
+
+    goCategoryReports() {
+      this.router.navigate(['category-reports']);
+    }
+
+    goDateRangeReport() {
+      this.router.navigate(['date-range-report']);
+    }
 }

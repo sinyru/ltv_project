@@ -26,7 +26,7 @@ export class SubscriberReportComponent implements OnInit {
   dRTwelveSubs:any = [];
   dRTwentyFourSubs:any = [];
   isDateRange:boolean = false;
-  searchDates:string ='';
+  searchDates:any;
 
   constructor(private http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService) { }
@@ -76,11 +76,11 @@ export class SubscriberReportComponent implements OnInit {
     });
   }
 
-  getWithinDateSubs(startDate:string, endDate:string) {
+  getWithinDateSubs(startDate:any, endDate:any) {
     this.isDateRange = true;
-    let startDate = startDate.toISOString().split("T")[0];
-    let endDate = endDate.toISOString().split("T")[0];
-    this.searchDates = `${startDate}--${endDate}`;
+    let sDate = startDate.toISOString().split("T")[0].toString();
+    let eDate = endDate.toISOString().split("T")[0].toString();
+    this.searchDates = `${sDate}--${eDate}`;
     this.dRSubscriptions = this.subscriptions.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());
     this.dRSixSubs = this.sixSubs.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());
     this.dRTwelveSubs = this.twelveSubs.filter(subscription => subscription.created_at >= startDate.toISOString() && subscription.created_at <= endDate.toISOString());

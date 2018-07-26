@@ -23,7 +23,7 @@
 <div *ngIf="(isDateRange)">
   <label for="Category-select">Choose a Category:</label>
   <select id="Category-select" (change)="goReport($event)">
-      <option value="">--Please choose an option--</option>
+      <option value="" disabled>--Please choose an option--</option>
       <option value="All">All Subscriptions</option>
       <option value="6-Pack">6-Packs</option>
       <option value="12-Pack">12-Packs</option>
