@@ -11,7 +11,6 @@ import { HomeComponent } from './home/home.component';
 import { SubscriberReportComponent } from './subscriber-report/subscriber-report.component';
 import { ReturnCustomersComponent } from './return-customers/return-customers.component';
 import { CategoryReportsComponent } from './category-reports/category-reports.component';
-import { DateRangeReportComponent } from './date-range-report/date-range-report.component';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OrderModule } from 'ngx-order-pipe';
@@ -22,8 +21,7 @@ import { OrderModule } from 'ngx-order-pipe';
     HomeComponent,
     SubscriberReportComponent,
     ReturnCustomersComponent,
-    CategoryReportsComponent,
-    DateRangeReportComponent
+    CategoryReportsComponent
   ],
   imports: [
     BrowserModule,
