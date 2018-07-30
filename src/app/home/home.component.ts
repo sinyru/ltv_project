@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   public updateDateRange:string = '';
   public startDate:any = '';
   public today:any = '';
-  public twoWeeksDate:any = '';
+  public oneWeeksDate:any = '';
   public isUpdateable:boolean = false;
   public lapsedDays:number = 0;
   public weeks:number = 2;
@@ -38,11 +38,11 @@ export class HomeComponent implements OnInit {
       let dt2 = this.today.split("-");
       dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
       let dt3 = this.startDate.split("-");
-      dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+14);
+      dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+7);
       this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
-      (this.lapsedDays > 14)? this.isWeeksUpdateable=true : this.isWeeksUpdateable=false ;
+      (this.lapsedDays > 7)? this.isWeeksUpdateable=true : this.isWeeksUpdateable=false ;
       this.today = dt2.toISOString().split("T")[0];
-      this.twoWeeksDate = dt3.toISOString().split("T")[0];
+      this.oneWeeksDate = dt3.toISOString().split("T")[0];
     });
 
   }
@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit {
     this.spinnerService.show();
     this.http.get(environment.pageOrdersUrl)
     .subscribe((orders:any)=>{
-      this.updateDatabase(orders, this.twoWeeksDate);
+      this.updateDatabase(orders, this.oneWeeksDate);
     });
   }
 
@@ -85,12 +85,7 @@ export class HomeComponent implements OnInit {
               "product_title": itemDescription,
               "quantity": orders[i].line_items[j].quantity,
               "price": orders[i].line_items[j].price,
-              "order_unique_key": `${orders[i].id}${itemDescription}${orders[i].created_at}${orders[i].line_items[j].quantity}`,
-              "s_24": false,
-              "s_12": false,
-              "s_6": false,
-              "s_sub": false,
-              "prod_sub": false
+              "order_unique_key": `${orders[i].id}${itemDescription}${orders[i].created_at}${orders[i].line_items[j].quantity}`
             }
             if (order["variant_title"] === "" || order["variant_title"] === null) {
               order["variant_title"] = "Sampler";
