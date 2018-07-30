@@ -8,6 +8,7 @@ import { DateRangeReportComponent } from './date-range-report/date-range-report.
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
   { path: 'subscribers-report', component: SubscriberReportComponent },
   { path: 'return-customers', component: ReturnCustomersComponent },
   { path: 'category-reports', component: CategoryReportsComponent },

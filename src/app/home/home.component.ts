@@ -64,92 +64,50 @@ export class HomeComponent implements OnInit {
   }
 
   updateDatabase(data:any, updateDate:any) {
-    // this.spinnerService.show();
-    // this.http.get(environment.ordersUrl)
-    // .subscribe((data:any)=>{
       let orders = [];
       for(let i=0;i<data.length;i++){
         for(let k=0;k<data[i].orders.length;k++){
           orders.push(data[i].orders[k]);
         }
       }
-      let sampleCounts = 0;
-      let sixCounts = 0;
-      let twelveCounts = 0;
-      let twentyFourCounts = 0;
       for(let i=0;i<orders.length;i++) {
-        // let customer = {
-        //                   "customer_id": orders[i].customer.id,
-        //                   "email": orders[i].customer.email,
-        //                   "first_name": orders[i].customer.first_name,
-        //                   "last_name": orders[i].customer.last_name,
-        //                   "province": (orders[i].customer.default_address)? orders[i].customer.default_address.province_code : 'N/A' ,
-        //                   "country": (orders[i].customer.default_address)? orders[i].customer.default_address.province_code : 'N/A'
-        //                };
-        // this.http.post(environment.customersUrl, {"customer": customer}).toPromise().then();
         for(let j=0;j<orders[i].line_items.length;j++){
-          let order = {
-            "order_id": orders[i].id,
-            "customer_id": orders[i].customer.id,
-            "created_at": orders[i].created_at,
-            "item_purchased": (orders[i].line_items[j].variant_title)? orders[i].line_items[j].variant_title : "",
-            "email": orders[i].customer.email,
-            "first_name": orders[i].customer.first_name,
-            "last_name": orders[i].customer.last_name,
-            "item_description": (orders[i].line_items[j].name)? orders[i].line_items[j].name : "",
-            "quantity": orders[i].line_items[j].quantity,
-            "price": orders[i].line_items[j].price,
-            "order_unique_key": `${orders[i].id}-${orders[i].created_at}-${orders[i].line_items[j].sku}`
-          }
-          if (order["item_purchased"] === "") {
-            order["item_purchased"] = "Sampler";
-          }
-          if (orders[i].line_items[j].name.split(" ")[3] === 'Sampler') {
-            this.http.post(environment.sampleOrdersUrl, {"sample_order": order}).toPromise().then();
-            sampleCounts++;
-          } else if (orders[i].line_items[j].variant_title === "6-Pack") {
-            this.http.post(environment.sixPackOrdersUrl, {"six_pack_order": order}).toPromise().then();
-            sixCounts++;
-          } else if (orders[i].line_items[j].variant_title === "12-Pack") {
-            this.http.post(environment.twevlePackOrdersUrl, {"twelve_pack_order": order}).toPromise().then();
-            twelveCounts++;
-          } else if (orders[i].line_items[j].variant_title === "24-Pack") {
-            this.http.post(environment.twentyFourPackOrdersUrl, {"twenty_four_pack_order": order}).toPromise().then();
-            twentyFourCounts++;
+          if (orders[i].customer) {
+            let itemDescription = (orders[i].line_items[j].name)? orders[i].line_items[j].name : "";
+            let order = {
+              "order_id": orders[i].id,
+              "customer_id": (orders[i].customer)? orders[i].customer.id : "",
+              "created_at": orders[i].created_at,
+              "variant_title": (orders[i].line_items[j].variant_title)? orders[i].line_items[j].variant_title : "",
+              "email": orders[i].email,
+              "first_name": (orders[i].customer)? orders[i].customer.first_name : "",
+              "last_name": (orders[i].customer)? orders[i].customer.last_name : "",
+              "product_title": itemDescription,
+              "quantity": orders[i].line_items[j].quantity,
+              "price": orders[i].line_items[j].price,
+              "order_unique_key": `${orders[i].id}${itemDescription}${orders[i].created_at}${orders[i].line_items[j].quantity}`,
+              "s_24": false,
+              "s_12": false,
+              "s_6": false,
+              "s_sub": false,
+              "prod_sub": false
+            }
+            if (order["variant_title"] === "" || order["variant_title"] === null) {
+              order["variant_title"] = "Sampler";
+              order["item_type"] = "Sampler";
+            } else {
+              order["item_type"] = "Product";
+            }
+            this.http.post(environment.allOrdersUrl, {"all_order": order}).toPromise().then();
           }
         }
       }
-      // this.http.get(environment.subscriberCountsUrl).subscribe((data:any)=>{
-        // let monthReport = {
-        //   "order_counts": orders.length,
-        //   "sample_counts": sampleCounts,
-        //   "six_counts": sixCounts,
-        //   "twelve_counts": twelveCounts,
-        //   "twenty_four_counts": twentyFourCounts,
-        //   "subscriber_counts": data.count,
-        //   "date_range": this.updateDateRange
-        // };
-        // this.http.post(environment.monthReportsUrl, {"month_report": monthReport}).toPromise().then(()=>{
-          let newDate = {
-            "start_date": updateDate
-          };
-          this.http.post(environment.rDatesUrl, {"rdate": newDate}).toPromise().then(()=>{
-              this.isUpdateable = (this.today > this.startDate);
-              let dt1 = this.startDate.split("-");
-              dt1 = new Date(dt1[0], dt1[1]-1, dt1[2]);
-              let dt2 = this.today.split("-");
-              dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
-              let dt3 = this.startDate.split("-");
-              dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+14);
-              this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
-              (this.lapsedDays > 14)? this.isWeeksUpdateable=true : this.isWeeksUpdateable=false ;
-              this.today = dt2.toISOString().split("T")[0];
-              this.twoWeeksDate = dt3.toISOString().split("T")[0];
-              this.spinnerService.hide();
-          });
-        // });
-      // });
-    // });
+      let newDate = {
+        "start_date": updateDate
+      };
+      this.http.post(environment.rDatesUrl, {"rdate": newDate}).toPromise().then(()=>{
+        (this.router.url === '/')? this.router.navigate(['home']) : this.router.navigate(['']);
+      });
   }
 
     goSubscribers() {

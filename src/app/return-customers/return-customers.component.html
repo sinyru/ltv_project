@@ -8,13 +8,14 @@
 
 <select id="Category-select" (change)="goReport($event)">
     <option value="" disabled>--Please choose an option--</option>
-    <option value="sampleOrdersUrl">Samples</option>
-    <option value="sixPackOrdersUrl">6-Packs</option>
-    <option value="twevlePackOrdersUrl">12-Packs</option>
-    <option value="twentyFourPackOrdersUrl">24-Packs</option>
+    <option value="all">All</option>
+    <option value="sample">Samples</option>
+    <option value="sixPack">6-Packs</option>
+    <option value="twelvePack">12-Packs</option>
+    <option value="twentyFourPack">24-Packs</option>
 </select>
 
-<div *ngIf="haveData">
+<div *ngIf="haveData" style="text-align:center;">
   <table class="table">
       <tr>
           <th>Last Name</th>
@@ -25,18 +26,30 @@
           <th>Item Description</th>
           <th>Quantity</th>
           <th>Price</th>
-          <th>Time Lapsed</th>
+          <th>Time Lapsed since first purchase</th>
+          <th>Time Lapsed since last purchase</th>
+          <th>Sample/Product/Sub?</th>
+          <th>LTV</th>
+          <th>Purchase Type after Sample</th>
+          <th>Prod-Sub</th>
+          <th>Time Lapsed from prod to sub</th>
       </tr>
-      <tr *ngFor="let return of returns">
+      <tr *ngFor="let return of returnResults">
           <td>{{return.last_name}}</td>
           <td>{{return.first_name}}</td>
-          <td>{{return.created_at}}</td>
+          <td>{{return.created_at.split(".000Z")[0]}}</td>
           <td>{{return.email}}</td>
-          <td>{{return.item_purchased}}</td>
-          <td>{{return.item_description}}</td>
+          <td>{{return.variant_title}}</td>
+          <td>{{return.product_title}}</td>
           <td>{{return.quantity}}</td>
           <td>${{return.price.toFixed(2)}}</td>
-          <td>{{return.time_lapsed}}</td>
+          <td>{{return.time_lapsed_fp}}</td>
+          <td>{{return.time_lapsed_lp}}</td>
+          <td>{{return.item_type}}</td>
+          <td>${{return.ltv.toFixed(2)}}</td>
+          <td>{{return.purchase_after_sample}}</td>
+          <td>{{return.prod_sub}}</td>
+          <td>{{return.time_lapsed_ps}}</td>
       </tr>
   </table>
 </div>
