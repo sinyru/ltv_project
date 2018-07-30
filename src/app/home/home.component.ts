@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
       let dt2 = this.today.split("-");
       dt2 = new Date(dt2[0], dt2[1]-1, dt2[2]);
       let dt3 = this.startDate.split("-");
-      dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+4);
+      dt3 = new Date(dt3[0], dt3[1]-1, parseInt(dt3[2])+7);
       this.lapsedDays = Math.round((dt2-dt1)/(1000*60*60*24));
       (this.lapsedDays > 7)? this.isWeeksUpdateable=true : this.isWeeksUpdateable=false ;
       this.today = dt2.toISOString().split("T")[0];
