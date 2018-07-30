@@ -18,12 +18,11 @@ export class ReturnCustomersComponent implements OnInit {
   haveData:boolean = false;
   subscribers:any = [];
   subscriptions:any = [];
-  reportSelected:any="";
-  filterValue:string="last_name";
   isDateRange:boolean = false;
   searchDates:any;
   results:any = [];
   returnResults:any = [];
+  searchDateOrders:any=[];
 
   constructor(public http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService) { }
@@ -115,8 +114,11 @@ export class ReturnCustomersComponent implements OnInit {
     });
   }
 
-  goReport(reportUrl:any) {
-    this.haveData = true;
+  getDateOrders(startDate:any, endDate:any) {
+    this.isDateRange = true;
+    let sDate = startDate.toISOString().split("T")[0].toString();
+    let eDate = endDate.toISOString().split("T")[0].toString();
+    this.searchDates = `${sDate}--${eDate}`;
     this.returns = [];
     for(let i=0; i<this.orders.length; i++) {
       if (this.orders[i-1] && this.orders[i+1]) {
@@ -170,10 +172,15 @@ export class ReturnCustomersComponent implements OnInit {
           this.results.push(customerOrders[j]);
       }
     }
-    (reportUrl.target.value === 'sample')? this.returnResults = this.results.filter((order)=>order.variant_title === "Sampler") :
-    (reportUrl.target.value === 'sixPack')? this.returnResults = this.results.filter((order)=>order.variant_title === "6-Pack" ) :
-    (reportUrl.target.value === 'twelvePack')? this.returnResults = this.results.filter((order)=>order.variant_title === "12-Pack" ) :
-    (reportUrl.target.value === 'twentyFourPack')? this.returnResults = this.results.filter((order)=>order.variant_title === "24-Pack" ) : this.returnResults = this.results;
+    this.searchDateOrders = this.results.filter(order => order.created_at >= startDate.toISOString() && order.created_at <= endDate.toISOString());
+  }
+
+  goReport(reportUrl:any) {
+    this.haveData = true;
+    (reportUrl.target.value === 'sample')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "Sampler") :
+    (reportUrl.target.value === 'sixPack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "6-Pack" ) :
+    (reportUrl.target.value === 'twelvePack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "12-Pack" ) :
+    (reportUrl.target.value === 'twentyFourPack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "24-Pack" ) : this.returnResults = this.searchDateOrders;
   }
 
   goBack() {
