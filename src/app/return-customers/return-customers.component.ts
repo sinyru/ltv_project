@@ -23,6 +23,7 @@ export class ReturnCustomersComponent implements OnInit {
   results:any = [];
   returnResults:any = [];
   searchDateOrders:any=[];
+  reportSelected:string="";
 
   constructor(public http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService) { }
@@ -176,11 +177,14 @@ export class ReturnCustomersComponent implements OnInit {
   }
 
   goReport(reportUrl:any) {
+    this.spinnerService.show();
     this.haveData = true;
+    this.reportSelected = reportUrl.target.value;
     (reportUrl.target.value === 'sample')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "Sampler") :
     (reportUrl.target.value === 'sixPack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "6-Pack" ) :
     (reportUrl.target.value === 'twelvePack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "12-Pack" ) :
     (reportUrl.target.value === 'twentyFourPack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "24-Pack" ) : this.returnResults = this.searchDateOrders;
+    this.spinnerService.hide();
   }
 
   goBack() {

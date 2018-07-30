@@ -4,37 +4,55 @@
 <button (click)="exportCSV()">Export</button>
 <button (click)="goBack()">Back</button>
 
-<label for="Category-select">Choose a Category:</label>
+<div *ngIf="(reportSelected !== '')">
+  <p>{{results.length}} orders of {{reportSelected}}</p>
+</div>
 
-<select id="Category-select" (change)="goReport($event)">
-    <option value="">--Please choose an option--</option>
-    <option value="sampleOrdersUrl">Samples</option>
-    <option value="sixPackOrdersUrl">6-Packs</option>
-    <option value="twevlePackOrdersUrl">12-Packs</option>
-    <option value="twentyFourPackOrdersUrl">24-Packs</option>
-</select>
+<label>
+    From
+    <input [owlDateTimeTrigger]="dt1" [owlDateTime]="dt1">
+    <owl-date-time [pickerType]="'calendar'" #dt1></owl-date-time>
+</label>
+<label>
+    To
+    <input [owlDateTimeTrigger]="dt2" [owlDateTime]="dt2">
+    <owl-date-time [pickerType]="'calendar'" #dt2></owl-date-time>
+</label>
+<button (click)="getDateOrders(dt1.selected, dt2.selected)">Search</button>
 
-<div *ngIf="haveData">
-  <table class="table">
-      <tr>
-          <th>Last Name</th>
-          <th>First Name</th>
-          <th>Order Date</th>
-          <th>Email</th>
-          <th>Item Purchased</th>
-          <th>Item Description</th>
-          <th>Quantity</th>
-          <th>Price</th>
-      </tr>
-      <tr *ngFor="let order of orders">
-          <td>{{order.last_name}}</td>
-          <td>{{order.first_name}}</td>
-          <td>{{order.created_at}}</td>
-          <td>{{order.email}}</td>
-          <td>{{order.item_purchased}}</td>
-          <td>{{order.item_description}}</td>
-          <td>{{order.quantity}}</td>
-          <td>${{order.price.toFixed(2)}}</td>
-      </tr>
-  </table>
+<div *ngIf="(isDateRange)">
+  <label for="Category-select">Choose a Category:</label>
+  <select id="Category-select" (change)="goReport($event)">
+      <option value="" disabled>--Please choose an option--</option>
+      <option value="all">All</option>
+      <option value="sample">Samples</option>
+      <option value="6-Pack">6-Packs</option>
+      <option value="12-Pack">12-Packs</option>
+      <option value="24-Pack">24-Packs</option>
+  </select>
+
+  <div *ngIf="haveData">
+    <table class="table">
+        <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Order Date</th>
+            <th>Email</th>
+            <th>Item Purchased</th>
+            <th>Item Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+        </tr>
+        <tr *ngFor="let order of results">
+            <td>{{order.last_name}}</td>
+            <td>{{order.first_name}}</td>
+            <td>{{order.created_at}}</td>
+            <td>{{order.email}}</td>
+            <td>{{order.variant_title}}</td>
+            <td>{{order.product_title}}</td>
+            <td>{{order.quantity}}</td>
+            <td>${{order.price.toFixed(2)}}</td>
+        </tr>
+    </table>
+  </div>
 </div>

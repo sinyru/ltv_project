@@ -3,6 +3,9 @@
 <button (click)="exportCSV()">Export</button>
 <button (click)="goBack()">Back</button>
 
+<div *ngIf="(reportSelected !== '')">
+  <p>{{returnResults.length}} orders of {{reportSelected}}</p>
+</div>
 
 <label>
     From

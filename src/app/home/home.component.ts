@@ -114,10 +114,6 @@ export class HomeComponent implements OnInit {
       this.router.navigate(['subscribers-report']);
     }
 
-    goMonthlyReport() {
-      this.router.navigate(['monthly-report']);
-    }
-
     goReturnCustomers() {
       this.router.navigate(['return-customers']);
     }
@@ -126,7 +122,4 @@ export class HomeComponent implements OnInit {
       this.router.navigate(['category-reports']);
     }
 
-    goDateRangeReport() {
-      this.router.navigate(['date-range-report']);
-    }
 }
