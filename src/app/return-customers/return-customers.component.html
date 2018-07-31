@@ -24,11 +24,11 @@
   <label for="Category-select">Choose a Category:</label>
   <select id="Category-select" (change)="goReport($event)">
       <option value="" disabled>--Please choose an option--</option>
-      <option value="all">All</option>
-      <option value="sample">Samples</option>
-      <option value="sixPack">6-Packs</option>
-      <option value="twelvePack">12-Packs</option>
-      <option value="twentyFourPack">24-Packs</option>
+      <option value="">All-Return</option>
+      <option value="return-sample">Samples-Return</option>
+      <option value="return-sixPack">6-Packs-Return</option>
+      <option value="return-twelvePack">12-Packs-Return</option>
+      <option value="return-twentyFourPack">24-Packs-Return</option>
   </select>
 
   <div *ngIf="haveData" style="text-align:center;">
@@ -58,11 +58,11 @@
             <td>{{return.variant_title}}</td>
             <td>{{return.product_title}}</td>
             <td>{{return.quantity}}</td>
-            <td>${{return.price.toFixed(2)}}</td>
+            <td>${{return.price}}</td>
             <td>{{return.time_lapsed_fp}}</td>
             <td>{{return.time_lapsed_lp}}</td>
             <td>{{return.item_type}}</td>
-            <td>${{return.ltv.toFixed(2)}}</td>
+            <td>${{return.ltv}}</td>
             <td>{{return.purchase_after_sample}}</td>
             <td>{{return.prod_sub}}</td>
             <td>{{return.time_lapsed_ps}}</td>

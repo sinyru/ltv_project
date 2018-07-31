@@ -1,11 +1,10 @@
-<h1>
-  Orders Report!
-</h1>
+<h1>All Customers Report!</h1>
+
 <button (click)="exportCSV()">Export</button>
 <button (click)="goBack()">Back</button>
 
 <div *ngIf="(reportSelected !== '')">
-  <p>{{results.length}} orders of {{reportSelected}}</p>
+  <p>{{returnResults.length}} orders of {{reportSelected}}</p>
 </div>
 
 <label>
@@ -20,18 +19,19 @@
 </label>
 <button (click)="getDateOrders(dt1.selected, dt2.selected)">Search</button>
 
+
 <div *ngIf="(isDateRange)">
   <label for="Category-select">Choose a Category:</label>
   <select id="Category-select" (change)="goReport($event)">
       <option value="" disabled>--Please choose an option--</option>
       <option value="all">All</option>
       <option value="sample">Samples</option>
-      <option value="6-Pack">6-Packs</option>
-      <option value="12-Pack">12-Packs</option>
-      <option value="24-Pack">24-Packs</option>
+      <option value="sixPack">6-Packs</option>
+      <option value="twelvePack">12-Packs</option>
+      <option value="twentyFourPack">24-Packs</option>
   </select>
 
-  <div *ngIf="haveData">
+  <div *ngIf="haveData" style="text-align:center;">
     <table class="table">
         <tr>
             <th>Last Name</th>
@@ -42,16 +42,30 @@
             <th>Item Description</th>
             <th>Quantity</th>
             <th>Price</th>
+            <th>Time Lapsed since first purchase</th>
+            <th>Time Lapsed since last purchase</th>
+            <th>Sample/Product/Sub?</th>
+            <th>LTV</th>
+            <th>Purchase Type after Sample</th>
+            <th>Prod-Sub</th>
+            <th>Time Lapsed from prod to sub</th>
         </tr>
-        <tr *ngFor="let order of results">
-            <td>{{order.last_name}}</td>
-            <td>{{order.first_name}}</td>
-            <td>{{order.created_at}}</td>
-            <td>{{order.email}}</td>
-            <td>{{order.variant_title}}</td>
-            <td>{{order.product_title}}</td>
-            <td>{{order.quantity}}</td>
-            <td>${{order.price.toFixed(2)}}</td>
+        <tr *ngFor="let return of returnResults">
+            <td>{{return.last_name}}</td>
+            <td>{{return.first_name}}</td>
+            <td>{{return.created_at.split(".000Z")[0]}}</td>
+            <td>{{return.email}}</td>
+            <td>{{return.variant_title}}</td>
+            <td>{{return.product_title}}</td>
+            <td>{{return.quantity}}</td>
+            <td>${{return.price}}</td>
+            <td>{{return.time_lapsed_fp}}</td>
+            <td>{{return.time_lapsed_lp}}</td>
+            <td>{{return.item_type}}</td>
+            <td>${{return.ltv}}</td>
+            <td>{{return.purchase_after_sample}}</td>
+            <td>{{return.prod_sub}}</td>
+            <td>{{return.time_lapsed_ps}}</td>
         </tr>
     </table>
   </div>

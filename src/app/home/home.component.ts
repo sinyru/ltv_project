@@ -77,14 +77,14 @@ export class HomeComponent implements OnInit {
             let order = {
               "order_id": orders[i].id,
               "customer_id": (orders[i].customer)? orders[i].customer.id : "",
-              "created_at": orders[i].created_at,
+              "created_at": orders[i].created_at.split("-04:00")[0],
               "variant_title": (orders[i].line_items[j].variant_title)? orders[i].line_items[j].variant_title : "",
               "email": orders[i].email,
               "first_name": (orders[i].customer)? orders[i].customer.first_name : "",
               "last_name": (orders[i].customer)? orders[i].customer.last_name : "",
               "product_title": itemDescription,
               "quantity": orders[i].line_items[j].quantity,
-              "price": orders[i].line_items[j].price,
+              "price": parseFloat(orders[i].line_items[j].price),
               "order_unique_key": `${orders[i].id}${itemDescription}${orders[i].created_at}${orders[i].line_items[j].quantity}`
             }
             if (order["variant_title"] === "" || order["variant_title"] === null) {

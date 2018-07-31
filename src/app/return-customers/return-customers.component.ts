@@ -24,6 +24,8 @@ export class ReturnCustomersComponent implements OnInit {
   returnResults:any = [];
   searchDateOrders:any=[];
   reportSelected:string="";
+  returnCustomers:any=[];
+  rCDateSearch:any=[];
 
   constructor(public http: HttpClient, private router:Router,
     private spinnerService: Ng4LoadingSpinnerService) { }
@@ -44,12 +46,8 @@ export class ReturnCustomersComponent implements OnInit {
             let subscription = {
               "last_name":customer.last_name,
               "first_name":customer.first_name,
-              "created_at":customer.created_at,
-              "updated_at":customer.updated_at,
-              "billing_province":customer.billing_province,
-              "billing_country":customer.billing_country,
+              "created_at":subscriptions[x].subscriptions[y].created_at,
               "email":customer.email,
-              "status":subscriptions[x].subscriptions[y].status,
               "product_title":subscriptions[x].subscriptions[y].product_title,
               "variant_title":(subscriptions[x].subscriptions[y].variant_title === "")? "Sampler": subscriptions[x].subscriptions[y].variant_title,
               "cancellation_reason": (subscriptions[x].subscriptions[y].cancellation_reason === null)? "" : (subscriptions[x].subscriptions[y].cancellation_reason_comments === null)? subscriptions[x].subscriptions[y].cancellation_reason : subscriptions[x].subscriptions[y].cancellation_reason + " " + subscriptions[x].subscriptions[y].cancellation_reason_comments,
@@ -68,11 +66,7 @@ export class ReturnCustomersComponent implements OnInit {
               "last_name":order.last_name,
               "first_name":order.first_name,
               "created_at":order.created_at,
-              "updated_at": "",
-              "billing_province": "",
-              "billing_country": "",
               "email":order.email,
-              "status": "",
               "product_title":order.product_title,
               "variant_title":order.variant_title,
               "cancellation_reason": "",
@@ -86,21 +80,7 @@ export class ReturnCustomersComponent implements OnInit {
           this.orders = this.orders.sort((a, b)=> {
                b["variant_title"] - a["variant_title"] || a["created_at"] - b["created_at"] || a["email"] - b["email"];
           });
-          let sum = 0;
-          let count = 0;
           for(let i=0;i<this.orders.length;i++) {
-            sum = sum + this.orders[i].price;
-            count++;
-            if(this.orders[i+1]) {
-              if(this.orders[i].email !== this.orders[i+1].email) {
-                this.orders[i]['ltv'] = sum;
-                for(let x=0;x<count;x++){
-                  this.orders[i-x]['ltv'] = sum;
-                }
-                count = 0;
-                sum = 0;
-              }
-            }
             if(this.orders[i+1]!==undefined) {
               if(this.orders[i].created_at === this.orders[i+1].created_at && this.orders[i+1].variant_title === 'Sampler') {
                 let temp = this.orders[i];
@@ -136,6 +116,7 @@ export class ReturnCustomersComponent implements OnInit {
         }
       }
     }
+
     const unique = this.returns.map(item => item.email).filter((value, index, self) => self.indexOf(value) === index)
     for(let i=0;i<unique.length;i++) {
       let customerOrders = this.returns.filter((order) => order.email === unique[i]);
@@ -145,6 +126,11 @@ export class ReturnCustomersComponent implements OnInit {
       let previousOrder = firstSub - 1;
       let firstProductPurchase = customerOrders.findIndex((order)=>order.item_type !== 'Sampler');
       for(let j=0;j<customerOrders.length;j++) {
+          customerOrders[j]['ltv'] = customerOrders.reduce((total, order)=> total + order.price, 0);
+          customerOrders[j]['time_lapsed_ps'] = "";
+          customerOrders[j]['purchase_after_sample'] = "";
+          customerOrders[j]['time_lapsed_lp'] = "";
+          customerOrders[j]['time_lapsed_fp'] = "";
           if(previousOrder >= 0) {
             if(customerOrders[previousOrder].item_type === 'Product') {
               let d1 = new Date(customerOrders[previousOrder].created_at).getTime();
@@ -180,10 +166,10 @@ export class ReturnCustomersComponent implements OnInit {
     this.spinnerService.show();
     this.haveData = true;
     this.reportSelected = reportUrl.target.value;
-    (reportUrl.target.value === 'sample')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "Sampler") :
-    (reportUrl.target.value === 'sixPack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "6-Pack" ) :
-    (reportUrl.target.value === 'twelvePack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "12-Pack" ) :
-    (reportUrl.target.value === 'twentyFourPack')? this.returnResults = this.searchDateOrders.filter((order)=>order.variant_title === "24-Pack" ) : this.returnResults = this.searchDateOrders;
+    (reportUrl.target.value === 'return-sample')? this.returnResults = this.rCDateSearch.filter((order)=>order.variant_title === "Sampler") :
+    (reportUrl.target.value === 'return-sixPack')? this.returnResults = this.rCDateSearch.filter((order)=>order.variant_title === "6-Pack" ) :
+    (reportUrl.target.value === 'return-twelvePack')? this.returnResults = this.rCDateSearch.filter((order)=>order.variant_title === "12-Pack" ) :
+    (reportUrl.target.value === 'return-twentyFourPack')? this.returnResults = this.rCDateSearch.filter((order)=>order.variant_title === "24-Pack" ) : this.returnResults = this.searchDateOrders;
     this.spinnerService.hide();
   }
 
@@ -192,6 +178,26 @@ export class ReturnCustomersComponent implements OnInit {
   }
 
   exportCSV() {
+    let headers = {
+      "last_name":"last_name",
+      "first_name":"first_name",
+      "created_at":"created_at",
+      "email":"email",
+      "product_title":"product_title",
+      "variant_title":"variant_title",
+      "cancellation_reason": "cancellation_reason",
+      "price":"price",
+      "quantity":"quantity",
+      "item_type": "item_type",
+      "prod_sub": "prod_sub",
+      "ltv": "ltv",
+      "time_lapsed_ps": "time_lapsed_ps",
+      "purchase_after_sample": "purchase_after_sample",
+      "time_lapsed_lp": "time_lapsed_lp",
+      "time_lapsed_fp": "time_lapsed_fp"
+    };
+    this.returnResults.unshift(headers);
     new Angular5Csv(this.returnResults, 'return-customer-report');
+    this.returnResults.shift();
   }
 }
